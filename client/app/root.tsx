@@ -6,12 +6,16 @@ import {
   Scripts,
   ScrollRestoration
 } from "remix";
+import Layout from "./components/Layout";
 import type { MetaFunction } from "remix";
+import styles from "./styles/app.css"
 
 export const meta: MetaFunction = () => {
   return { title: "New Remix App" };
 };
-
+export function links() {
+  return [{ rel: "stylesheet", href: styles }];
+}
 export default function App() {
   return (
     <html lang="en">
@@ -22,7 +26,10 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <Layout>
+          <Outlet />
+        </Layout>
+        <div className="background"></div>
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}
