@@ -6,10 +6,18 @@ export async function getHeaders(form: FormData) {
   const headers: Record<string, string> = {}
 
   keys.forEach((key: string, index: number) => {
-    headers[key] = values[index]
+    if (key && values[index]) {
+      headers[key] = values[index]
+    }
   })
 
   return headers
 }
 
+export function isEmptyObject(obj: object) {
+  for (let i in obj) {
+    return false
+  }
+  return true
+}
 
