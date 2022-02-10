@@ -4,17 +4,15 @@ import {
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
-} from "remix";
-import Layout from "./components/Layout";
-import type { MetaFunction } from "remix";
-import styles from "./styles/app.css"
+  ScrollRestoration,
+} from 'remix';
+import type { MetaFunction } from 'remix';
+import Layout from './components/Layout';
+import styles from './styles/app.css';
 
-export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
-};
+export const meta: MetaFunction = () => ({ title: 'Mock - Prototyping fast and easy' });
 export function links() {
-  return [{ rel: "stylesheet", href: styles }];
+  return [{ rel: 'stylesheet', href: styles }];
 }
 export default function App() {
   return (
@@ -29,10 +27,10 @@ export default function App() {
         <Layout>
           <Outlet />
         </Layout>
-        <div className="background"></div>
+        <div className="background" />
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
+        {process.env.NODE_ENV === 'development' && <LiveReload />}
       </body>
     </html>
   );

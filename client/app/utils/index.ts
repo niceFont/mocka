@@ -1,23 +1,9 @@
-export async function getHeaders(form: FormData) {
-
-  const keys = form.getAll('headers[key]') as Array<string>
-  const values = form.getAll('headers[value]') as Array<string>
-
-  const headers: Record<string, string> = {}
-
-  keys.forEach((key: string, index: number) => {
-    if (key && values[index]) {
-      headers[key] = values[index]
-    }
-  })
-
-  return headers
-}
-
-export function isEmptyObject(obj: object) {
-  for (let i in obj) {
-    return false
-  }
-  return true
-}
-
+export const formatHeaders = (
+  headers: Array<Record<string, string>>,
+): Record<string, string> | undefined => {
+  if (!headers) return undefined;
+  return headers.reduce((acc, header) => {
+    acc[header.key] = header.value;
+    return acc;
+  }, {} as Record<string, string>);
+};

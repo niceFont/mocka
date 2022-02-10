@@ -6,7 +6,7 @@ account_id = ""
 route = ""
 workers_dev = true
 kv_namespaces = [ 
-  { binding = "MOCKA_STORE",  preview_id = "5fd3210244ee4301b1422cf4f7278aa1" }
+  { binding = "MOCKA_STORE",  id = "5fd3210244ee4301b1422cf4f7278aa1" }
 ]
 
 [site]
