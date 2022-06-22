@@ -1,18 +1,23 @@
 import { PropsWithChildren } from 'react';
+import { Link } from 'remix';
+import Footer from '~/components/Footer';
 
 function Navbar({ children }: PropsWithChildren<any>) {
   return (
     <>
       <header className="flex justify-center">
-        <nav className="flex justify-between max-w-[1200px] min-w-[1200px]  text-white p-4">
-          <h1 className="font-bold text-4xl tracking-tight ">Mocka</h1>
+        <nav className="flex justify-between md:w-full  lg:max-w-[1400px] p-4">
+          <Link to="/">
+            <h1 className="font-bold text-4xl tracking-tighter text-slate-800 ">Mocka.</h1>
+          </Link>
         </nav>
       </header>
-      <main style={{ marginTop: '150px' }} className="flex justify-center items-center">
-        <div className="p-8 w-3/4 mb-20 max-w-[1000px] rounded-lg shadow-lg bg-white  border-gray-100 border-2">
+      <main className="flex justify-center">
+        <div className="w-full">
           {children}
         </div>
       </main>
+      <Footer />
     </>
   );
 }

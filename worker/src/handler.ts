@@ -14,6 +14,7 @@ const craftResponse = (etag: string, data: Endpoint) => {
     headers: {
       ...headers,
       'Content-Type': contentType,
+      Etag: etag,
       'Cache-Control': 's-maxage=3600'
     }
   });

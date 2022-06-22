@@ -27,7 +27,6 @@ export default function App() {
         <Layout>
           <Outlet />
         </Layout>
-        <div className="background" />
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === 'development' && <LiveReload />}
