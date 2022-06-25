@@ -1,7 +1,7 @@
 import {
   validationError, ValidatedForm, useFormContext, useField,
 } from 'remix-validated-form';
-import { redirect } from 'remix';
+import { redirect } from '@remix-run/node';
 import { withYup } from '@remix-validated-form/with-yup';
 import { hash as md5 } from 'spark-md5';
 import { TiDeleteOutline, TiPlus } from 'react-icons/ti';

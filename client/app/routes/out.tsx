@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'remix';
+import { useLocation } from '@remix-run/react';
 
 function Out() {
   const location = useLocation();

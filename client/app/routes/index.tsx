@@ -1,4 +1,4 @@
-import { Link } from 'remix';
+import { Link } from '@remix-run/react';
 import { TiArrowRightThick } from 'react-icons/ti';
 import { HiTrendingDown } from 'react-icons/hi';
 import { AiFillSave } from 'react-icons/ai';

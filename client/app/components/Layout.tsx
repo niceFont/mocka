@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { Link } from 'remix';
+import { Link } from '@remix-run/react';
 import Footer from '~/components/Footer';
 
 function Navbar({ children }: PropsWithChildren<any>) {
