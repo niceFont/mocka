@@ -13,10 +13,10 @@ function Out() {
   };
 
   useEffect(() => {
-    const hash = location.hash.replace('#', '');
-    const API_URL = `https://api.mocka.io/${hash}`;
-    setUrl(API_URL);
-  }, [location.hash]);
+    const params = new URLSearchParams(location.search);
+    const apiUrl = `https://api.mocka.io/${params.get("r") ?? ""}`;
+    setUrl(apiUrl);
+  }, [location.search]);
   return (
     <div className="flex flex-row justify-center">
       <input readOnly value={url} ref={urlRef} className="border bg-white border-b-4 shadow-md font-medium rounded-sm py-3 px-6 flex items-center outline-none focus:ring-2 focus:ring-blue-500" />

@@ -7,28 +7,48 @@ import { hash as md5 } from 'spark-md5';
 import { TiDeleteOutline, TiPlus } from 'react-icons/ti';
 import { useState, MouseEvent, PropsWithChildren } from 'react';
 import clsx from 'clsx';
-import { EndpointSchema } from '~/schemas';
-import { formatHeaders } from '~/utils';
+import { EndpointSchema as endpointSchema } from '~/schemas';
+import { extractBody, formatHeaders } from '~/utils';
 import Container from '~/components/Container';
+import {endpointRepository} from "../models/index.server"
+import { Prisma } from '@prisma/client';
+import {Method} from "@prisma/client"
 
-const validator = withYup(EndpointSchema);
+const validator = withYup(endpointSchema);
 
 export async function action({ request }: { request: Request }) {
   try {
     const fieldValues = await validator.validate(await request.formData());
     if (fieldValues.error) return validationError(fieldValues.error);
 
-    const headersObj = formatHeaders(fieldValues.data.headers);
+    const headers = formatHeaders(fieldValues.data.headers);
+    const {body_plain, body_json} = extractBody(fieldValues.data)
     const payload = {
-      ...fieldValues.data,
-      headers: headersObj,
-    };
+      body_json,
+      body_plain,
+      headers: headers as Prisma.InputJsonObject,
+      method: fieldValues.data.method as Method
+    }
     const hash = md5(JSON.stringify(payload));
-    // @ts-ignore
-    // eslint-disable-next-line no-undef
-    await MOCKA_STORE.put(hash, JSON.stringify(payload));
-    return redirect(`/out#${hash}`);
+    try {
+    await endpointRepository.createEndpoint({
+      data: {
+      ...payload,
+      slug: hash,
+    }
+  })
+    } catch (error) {
+      if(error instanceof Prisma.PrismaClientKnownRequestError) {
+        if(error.code === 'P2002') {
+          console.log(hash, "GOT HERE")
+          // We recover here by just returning the already existing entry
+          return redirect(`/out?r=${hash}`, 308);
+        }
+      }    
+    }
+    return redirect(`/out`);
   } catch (error) {
+    console.log(error)
     return new Response((error as Error).message, { status: 500 });
   }
 }

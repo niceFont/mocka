@@ -20,7 +20,7 @@ export const EndpointSchema = yup.object().shape({
     is: 'application/json',
     then: (schema) => schema.test('is-json', 'Please use valid JSON.', function t(value) {
       try {
-        JSON.parse(value || '');
+        JSON.parse(value ?? '');
         return true;
       } catch (error) {
         const { path, createError } = this;
@@ -31,3 +31,5 @@ export const EndpointSchema = yup.object().shape({
   }).optional().nullable()
     .default(null),
 });
+
+export type EndpointSchema = yup.InferType<typeof EndpointSchema>
