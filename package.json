@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "eslint": "^8.18.0",
+    "husky": "^8.0.1"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "format": "eslint --cache --cache-location ./node_modules/.cache/eslint . --fix"
+  }
+}

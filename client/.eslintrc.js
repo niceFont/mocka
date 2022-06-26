@@ -20,6 +20,12 @@ module.exports = {
 		'react',
 		'@typescript-eslint',
 	],
+	settings: {
+		react: {
+			version: 'detect',
+		},
+	},
+	ignorePatterns: ['postgres-data', 'build', 'public', 'node_modules'],
 	rules: {
 		'react/react-in-jsx-scope': 'off',
 		camelcase: 'off',
