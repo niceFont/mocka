@@ -1,0 +1,6 @@
+[submodule "api/shared"]
+	path = api/shared
+	url = git@github.com:niceFont/mocka-shared.git
+[submodule "client/shared"]
+	path = client/shared
+	url = git@github.com:niceFont/mocka-shared.git
