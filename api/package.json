@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "setup": "prisma generate --schema=./shared/prisma/schema.prisma && prisma migrate deploy",
+    "setup": "prisma generate --schema=./shared/prisma/schema.prisma && prisma migrate deploy --schema=./shared/prisma/schema.prisma",
     "dev": "tsc-watch --onSuccess \"node ./dist/index.js\""
   },
   "keywords": [],

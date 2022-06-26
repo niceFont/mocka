@@ -35,7 +35,8 @@ function setHeaders(reply : FastifyReply, headersJSON: string) {
 server.all('/:hash', async (request, reply) => {
 	const {hash} = request.params as { hash?: string };
 	if (!hash) {
-		return reply.status(404).send();
+		reply.statusCode = 404;
+		return reply.send('Not Found');
 	}
 
 	const endpoint = await prisma.endpoint.findUnique({
@@ -44,17 +45,20 @@ server.all('/:hash', async (request, reply) => {
 		},
 	});
 	if (!endpoint) {
-		return reply.send(404).send();
+		reply.statusCode = 404;
+		return reply.send('Not Found');
 	}
 
 	if (request.method.toLowerCase() !== endpoint.method.toLowerCase()) {
-		return reply.status(405).send();
+		reply.statusCode = 405;
+		return reply.send('Methot not allowed');
 	}
 
 	const body = getBody(endpoint);
 	setHeaders(reply, endpoint.headers?.toString() ?? '{}');
 	reply.header('Content-Type', endpoint.content_type);
-	return reply.status(endpoint.status).send(body);
+	reply.statusCode = endpoint.status;
+	return reply.send(body);
 });
 
 const start = async () => {
