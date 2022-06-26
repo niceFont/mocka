@@ -14,7 +14,7 @@ function Out() {
 
 	useEffect(() => {
 		const params = new URLSearchParams(location.search);
-		const apiUrl = `https://api.mocka.io/${params.get('r') ?? ''}`;
+		const apiUrl = `${window.ENV.API_HOST}/${params.get('r') ?? ''}`;
 		setUrl(apiUrl);
 	}, [location.search]);
 	return (
