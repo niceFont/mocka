@@ -4,7 +4,7 @@ import Footer from '~/components/Footer';
 
 function Navbar({children}: PropsWithChildren<any>) {
 	return (
-		<>
+		<div className='flex h-screen flex-col'>
 			<header className='flex justify-center'>
 				<nav className='flex justify-between md:w-full  lg:max-w-[1400px] p-4'>
 					<Link to='/'>
@@ -12,13 +12,13 @@ function Navbar({children}: PropsWithChildren<any>) {
 					</Link>
 				</nav>
 			</header>
-			<main className='flex justify-center'>
+			<main className='flex grow justify-center'>
 				<div className='w-full'>
 					{children}
 				</div>
 			</main>
 			<Footer />
-		</>
+		</div>
 	);
 }
 

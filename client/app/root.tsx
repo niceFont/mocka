@@ -11,12 +11,14 @@ import type {MetaFunction} from '@remix-run/server-runtime';
 import {json} from '@remix-run/server-runtime';
 import Layout from './components/Layout';
 import styles from './styles/app.css';
+import tailwind from './styles/tailwind.css';
 
 declare global {
   // eslint-disable-next-line no-unused-vars
   interface Window {
     ENV: {
 			API_HOST: string
+			WS_HOST: string
 		}
   }
 }
@@ -27,13 +29,17 @@ export const meta: MetaFunction = () => ({
 	viewport: 'width=device-width,initial-scale=1',
 });
 export function links() {
-	return [{rel: 'stylesheet', href: styles}];
+	return [
+		{rel: 'stylesheet', href: tailwind},
+		{rel: 'stylesheet', href: styles},
+	];
 }
 
 export async function loader() {
 	return json({
 		ENV: {
 			API_HOST: process.env.API_HOST,
+			WS_HOST: process.env.WS_HOST,
 		},
 	});
 }

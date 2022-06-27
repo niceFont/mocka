@@ -6,9 +6,5 @@ module.exports = {
 	theme: {
 		extend: {},
 	},
-	purge: [
-		'./public/**/*.html',
-		'./app/**/*.{js,jsx,ts,tsx,vue}',
-	],
 	plugins: [],
 };

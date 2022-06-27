@@ -12,5 +12,6 @@ node_modules
 /cypress/screenshots
 /cypress/videos
 /postgres-data
+.cache
 
 /app/styles/tailwind.css
