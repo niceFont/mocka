@@ -65,9 +65,8 @@ function getDevice(userAgent?: string) : string {
 	return `${os?.name ?? 'Unknown'}, ${device?.type ?? 'Unknown'}`;
 }
 
-function setHeaders(reply : FastifyReply, headersJSON: string) {
+function setHeaders(reply : FastifyReply, headers: Headers) {
 	try {
-		const headers : Headers = JSON.parse(headersJSON);
 		if (!Object.keys(headers).length) {
 			return;
 		}
@@ -102,7 +101,7 @@ server.all('/:hash', async (request, reply) => {
 	}
 
 	const body = getBody(endpoint);
-	setHeaders(reply, endpoint.headers?.toString() ?? '{}');
+	setHeaders(reply, endpoint.headers as Headers);
 	reply.header('Content-Type', endpoint.content_type);
 	emitRequest({
 		method: request.method,

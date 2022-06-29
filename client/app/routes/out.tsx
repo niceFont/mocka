@@ -1,11 +1,30 @@
 import {useEffect, useRef, useState} from 'react';
-import {useLocation} from '@remix-run/react';
+import {useLoaderData, useLocation} from '@remix-run/react';
 import socketIOClient from 'socket.io-client';
 import Container from '~/components/Container';
 import Table from '~/components/Table';
 import {EndpointRequest} from '~/types';
+import {json} from '@remix-run/server-runtime';
+import {endpointRepository} from '~/models/index.server';
+
+export async function action({request} : {request: Request}) {
+	try {
+		const url = new URL(request.url);
+		const hash = url.searchParams.get('r');
+		if (!hash) {
+			return;
+		}
+
+		const endpoint = await endpointRepository.getEndpoint(hash);
+
+		return json(endpoint);
+	} catch (error) {
+		console.log(error);
+	}
+}
 
 function Out() {
+	const endpoint = useLoaderData();
 	const location = useLocation();
 	const [url, setUrl] = useState<string>('');
 	const [endpointRequests, setEndpointRequests] = useState<Array<EndpointRequest>>([]);
@@ -21,15 +40,11 @@ function Out() {
 	useEffect(() => {
 		const socket = socketIOClient(window.ENV.API_HOST, {
 			path: '/ws',
-			extraHeaders: {
-				test: '123',
-			},
 		});
 		socket.on('connect', () => {
 			socket.emit('register', params.get('r') ?? '');
 		});
 		socket.on('got_request', data => {
-			console.log('GOT DAT', data);
 			setEndpointRequests(reqs => [...reqs, data]);
 		});
 		return () => {
@@ -52,7 +67,10 @@ function Out() {
 					<button onClick={addToClipboard} className='py-3 px-6 border-b-4 rounded-sm border-slate-700 bg-slate-600 text-white font-semibold text-lg shadow-md ' type='button'>Copy!</button>
 				</div>
 				<div className='flex flex-col mt-12 p-4 w-full bg-white'>
-					<h2 className='text-3xl font-bold text-slate-500 underline-offset-2 underline'>Incoming Requests:</h2>
+					<div className='flex items-center justify-between'>
+						<h2 className='text-3xl font-bold text-slate-500 underline-offset-2 underline'>Incoming Requests:</h2>
+						<button onClick={() => setEndpointRequests([])}>Reset</button>
+					</div>
 					<div>
 						<Table items={endpointRequests}/>
 					</div>

@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-key */
 import React from 'react';
 import type {EndpointRequest} from '../types';
-import {usePagination, useTable} from 'react-table';
+import {usePagination, useSortBy, useTable} from 'react-table';
 import {GrStatusGoodSmall} from 'react-icons/gr';
-import {AiOutlineArrowRight, AiOutlineArrowLeft} from 'react-icons/ai';
+import {AiOutlineArrowRight, AiOutlineArrowLeft, AiOutlineArrowUp, AiOutlineArrowDown} from 'react-icons/ai';
 import clsx from 'clsx';
 interface TableProps {
   items: EndpointRequest[]
@@ -36,7 +36,7 @@ function Table({items} : TableProps) {
 		[],
 	);
 
-	const tableInstance = useTable({columns, data, initialState: {pageIndex: 0, pageSize: 5}}, usePagination);
+	const tableInstance = useTable({columns, data, initialState: {pageIndex: 0, pageSize: 5}}, useSortBy, usePagination);
 
 	const {
 		getTableProps,
@@ -60,8 +60,12 @@ function Table({items} : TableProps) {
 						{headerGroups.map(headerGroup => (
 							<tr {...headerGroup.getHeaderGroupProps()}>
 								{headerGroup.headers.map(column => (
-									<th className='font-normal p-3' {...column.getHeaderProps()}>
-										{column.render('Header')}
+									<th className='font-normal p-3 ' {...column.getHeaderProps(column.getSortByToggleProps())}>
+										<div className='select-none flex grow-0 justify-center items-center w-full'>
+											{column.render('Header')}
+											{column.isSorted
+												? column.isSortedDesc ? <AiOutlineArrowDown/> : <AiOutlineArrowUp/> : '' }
+										</div>
 									</th>
 								))}
 							</tr>
