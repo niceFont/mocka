@@ -2,18 +2,13 @@ import {useEffect, useRef, useState} from 'react';
 import {useLocation} from '@remix-run/react';
 import socketIOClient from 'socket.io-client';
 import Container from '~/components/Container';
-
-interface EndpointRequests {
-	method: string
-	date: number
-	status: number
-	device?: string
-}
+import Table from '~/components/Table';
+import {EndpointRequest} from '~/types';
 
 function Out() {
 	const location = useLocation();
 	const [url, setUrl] = useState<string>('');
-	const [endpointRequests, setEndpointRequests] = useState<Array<EndpointRequests>>([]);
+	const [endpointRequests, setEndpointRequests] = useState<Array<EndpointRequest>>([]);
 	const urlRef = useRef<HTMLInputElement>(null);
 	const addToClipboard = () => {
 		const content = urlRef.current;
@@ -57,16 +52,9 @@ function Out() {
 					<button onClick={addToClipboard} className='py-3 px-6 border-b-4 rounded-sm border-slate-700 bg-slate-600 text-white font-semibold text-lg shadow-md ' type='button'>Copy!</button>
 				</div>
 				<div className='flex flex-col mt-12 p-4 w-full bg-white'>
-					<h2 className='text-3xl font-bold text-slate-500'>Incoming Requests</h2>
-					<div className='w-full border'></div>
+					<h2 className='text-3xl font-bold text-slate-500 underline-offset-2 underline'>Incoming Requests:</h2>
 					<div>
-						{endpointRequests.map((req, key) => (
-							<div className='bg-white mt-2 mb-2 justify-between p-4 rounded-md border-gray-500 border flex flex-row' key={key}>
-								<span>{req.status}</span>
-								<span>{req.method}</span>
-								<span>{new Intl.DateTimeFormat('en-US').format(Date.now())}</span>
-							</div>
-						))}
+						<Table items={endpointRequests}/>
 					</div>
 				</div>
 			</Container>

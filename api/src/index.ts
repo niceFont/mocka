@@ -1,6 +1,6 @@
-import fastify, {FastifyReply, FastifyRequest} from 'fastify';
+import fastify, {FastifyReply} from 'fastify';
+import {UAParser as uaParser} from 'ua-parser-js';
 import {Endpoint, PrismaClient} from '@prisma/client';
-import {FastifyInstance} from 'fastify';
 import socketioServer from 'fastify-socket.io';
 import cors from '@fastify/cors';
 
@@ -36,20 +36,33 @@ interface Headers {
 interface RequestLog {
 	method: string
 	status: number
-	date: number
+	date: string
+	device: string
+	matching: boolean
 }
 interface EmitOptions extends Omit<RequestLog, 'date'> {
-	roomId: string
+	roomId: string,
+	device: string
 }
 
-function emitRequest({method, status, roomId} : EmitOptions) {
+function emitRequest({method, status, roomId, device, matching} : EmitOptions) {
 	const payload : RequestLog = {
 		method,
-		date: Date.now(),
+		date: new Intl.DateTimeFormat('en-US', {dateStyle: 'short', timeStyle: 'short'}).format(Date.now()),
 		status,
+		device,
+		matching,
 	};
 
 	server.io.to(roomId).emit('got_request', payload);
+}
+
+function getDevice(userAgent?: string) : string {
+	const {
+		os,
+		device,
+	} = uaParser(userAgent);
+	return `${os?.name ?? 'Unknown'}, ${device?.type ?? 'Unknown'}`;
 }
 
 function setHeaders(reply : FastifyReply, headersJSON: string) {
@@ -66,7 +79,6 @@ function setHeaders(reply : FastifyReply, headersJSON: string) {
 }
 
 server.all('/:hash', async (request, reply) => {
-	console.log('GOT HERE');
 	const {hash} = request.params as { hash?: string };
 	if (!hash) {
 		reply.statusCode = 404;
@@ -83,7 +95,8 @@ server.all('/:hash', async (request, reply) => {
 		return reply.send('Not Found');
 	}
 
-	if (request.method.toLowerCase() !== endpoint.method.toLowerCase()) {
+	const matches = request.method.toLowerCase() === endpoint.method.toLowerCase();
+	if (!matches) {
 		reply.statusCode = 405;
 		return reply.send('Methot not allowed');
 	}
@@ -93,8 +106,10 @@ server.all('/:hash', async (request, reply) => {
 	reply.header('Content-Type', endpoint.content_type);
 	emitRequest({
 		method: request.method,
-		status: 200,
+		status: endpoint.status,
 		roomId: endpoint.slug,
+		device: getDevice(request.headers['user-agent']),
+		matching: matches,
 	});
 	reply.statusCode = endpoint.status;
 	return reply.send(body);

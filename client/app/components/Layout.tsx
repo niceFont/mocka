@@ -2,7 +2,7 @@ import {PropsWithChildren} from 'react';
 import {Link} from '@remix-run/react';
 import Footer from '~/components/Footer';
 
-function Navbar({children}: PropsWithChildren<any>) {
+function Navbar({children}: PropsWithChildren<unknown>) {
 	return (
 		<div className='flex h-screen flex-col'>
 			<header className='flex justify-center'>
