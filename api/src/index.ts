@@ -48,7 +48,7 @@ interface EmitOptions extends Omit<RequestLog, 'date'> {
 function emitRequest({method, status, roomId, device, matching} : EmitOptions) {
 	const payload : RequestLog = {
 		method,
-		date: new Intl.DateTimeFormat('en-US', {dateStyle: 'short', timeStyle: 'short'}).format(Date.now()),
+		date: new Intl.DateTimeFormat('en-US', {dateStyle: 'short', timeStyle: 'medium'}).format(Date.now()),
 		status,
 		device,
 		matching,
