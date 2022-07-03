@@ -89,7 +89,7 @@ function Textarea({children, name, ...props}: PropsWithChildren<any>) {
 function Submit() {
 	const {isSubmitting} = useFormContext();
 	return (
-		<button className='flex items-center px-5 py-2.5 font-medium tracking-wide text-white capitalize   bg-blue-800 rounded-md hover:bg-blue-600  focus:outline-none focus:bg-blue-500  transition duration-300 transform active:scale-95 ease-in-out' type='submit'>{isSubmitting ? 'Saving...' : 'Save'}</button>
+		<button className='flex items-center px-5 py-2.5 font-medium tracking-wide text-blue-600 capitalize   bg-white rounded-md hover:text-white  hover:bg-blue-600  focus:outline-none focus:bg-blue-500  transition duration-300 transform active:scale-95 ease-in-out' type='submit'>{isSubmitting ? 'Saving...' : 'Save'}</button>
 	);
 }
 

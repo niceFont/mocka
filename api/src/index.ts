@@ -1,7 +1,7 @@
 import fastify, {FastifyReply} from 'fastify';
 import {UAParser as uaParser} from 'ua-parser-js';
 import {Endpoint, PrismaClient} from '@prisma/client';
-import socketioServer from 'fastify-socket.io';
+import socketIo from 'fastify-socket.io';
 import cors from '@fastify/cors';
 
 const server = fastify({logger: true});
@@ -12,16 +12,18 @@ server.register(cors, {
 	origin: true,
 	methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
 });
-server.register(socketioServer, {
+server.register(socketIo, {
 	path: '/ws',
 	cors: {
 		origin: true,
 		methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
-	}});
-function getBody(endpoint: Endpoint) : object | string | undefined {
+	},
+});
+
+function getBody(endpoint: Endpoint): object | string | undefined {
 	const {body_json: bodyJson, body_plain: bodyPlain} = endpoint;
 	if (bodyJson) {
-		return bodyJson.valueOf;
+		return JSON.parse(bodyJson as string);
 	}
 
 	if (bodyPlain) {
@@ -30,23 +32,24 @@ function getBody(endpoint: Endpoint) : object | string | undefined {
 }
 
 interface Headers {
-  [key: string]: string
+    [key: string]: string
 }
 
 interface RequestLog {
-	method: string
-	status: number
-	date: string
-	device: string
-	matching: boolean
-}
-interface EmitOptions extends Omit<RequestLog, 'date'> {
-	roomId: string,
-	device: string
+    method: string
+    status: number
+    date: string
+    device: string
+    matching: boolean
 }
 
-function emitRequest({method, status, roomId, device, matching} : EmitOptions) {
-	const payload : RequestLog = {
+interface EmitOptions extends Omit<RequestLog, 'date'> {
+    roomId: string,
+    device: string
+}
+
+function emitRequest({method, status, roomId, device, matching}: EmitOptions) {
+	const payload: RequestLog = {
 		method,
 		date: new Intl.DateTimeFormat('en-US', {dateStyle: 'short', timeStyle: 'medium'}).format(Date.now()),
 		status,
@@ -57,7 +60,7 @@ function emitRequest({method, status, roomId, device, matching} : EmitOptions) {
 	server.io.to(roomId).emit('got_request', payload);
 }
 
-function getDevice(userAgent?: string) : string {
+function getDevice(userAgent?: string): string {
 	const {
 		os,
 		device,
@@ -65,7 +68,7 @@ function getDevice(userAgent?: string) : string {
 	return `${os?.name ?? 'Unknown'}, ${device?.type ?? 'Unknown'}`;
 }
 
-function setHeaders(reply : FastifyReply, headers: Headers) {
+function setHeaders(reply: FastifyReply, headers: Headers) {
 	try {
 		if (!Object.keys(headers).length) {
 			return;
@@ -97,15 +100,23 @@ server.all('/:hash', async (request, reply) => {
 	const matches = request.method.toLowerCase() === endpoint.method.toLowerCase();
 	if (!matches) {
 		reply.statusCode = 405;
-		return reply.send('Methot not allowed');
+		emitRequest({
+			method: request.method,
+			status: reply.statusCode,
+			roomId: endpoint.slug,
+			device: getDevice(request.headers['user-agent']),
+			matching: false,
+		});
+		return reply.send('Method not allowed');
 	}
 
 	const body = getBody(endpoint);
+	console.log(body);
 	setHeaders(reply, endpoint.headers as Headers);
 	reply.header('Content-Type', endpoint.content_type);
 	emitRequest({
 		method: request.method,
-		status: endpoint.status,
+		status: reply.statusCode,
 		roomId: endpoint.slug,
 		device: getDevice(request.headers['user-agent']),
 		matching: matches,
@@ -129,11 +140,12 @@ server.ready(err => {
 
 const start = async () => {
 	try {
-		server.listen({port: 8888, host: '127.0.0.1'});
+		await server.listen({port: 8888, host: '127.0.0.1'});
 	} catch (error) {
 		server.log.error(error);
 		process.exit(0);
 	}
 };
 
-start();
+start()
+	.catch(err => console.error('Unexpected Error: ', err));
