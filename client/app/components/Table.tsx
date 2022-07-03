@@ -97,7 +97,7 @@ function Table({items} : TableProps) {
 						<span className='mr-1'>
             Show
 						</span>
-						<select className='bg-white bg-clip-padding px-2 text-center py-1 bg-no-repeat transition ease-in-out appearance-none form-select border rounded       focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none' onChange={e => {
+						<select className='bg-white bg-clip-padding px-2 text-center py-1 bg-no-repeat transition ease-in-out appearance-none form-select border rounded focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none' onChange={e => {
 							setPageSize(Number(e.target.value));
 						}} value={pageSize} name='pageSize'>
 							{[5, 10, 15, 20].map(size =>
