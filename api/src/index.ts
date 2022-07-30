@@ -1,13 +1,13 @@
 import fastify, {FastifyReply} from 'fastify';
-import {UAParser as uaParser} from 'ua-parser-js';
-import {Endpoint, PrismaClient} from '@prisma/client';
+import {PrismaClient} from '@prisma/client';
 import socketIo from 'fastify-socket.io';
 import cors from '@fastify/cors';
+import {getBody, getDevice} from './utils';
+import {EmitOptions, Headers, RequestLog} from './types';
 
 const server = fastify({logger: true});
 const prisma = new PrismaClient();
 
-// FIX THIS STUFF
 server.register(cors, {
 	origin: true,
 	methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
@@ -20,34 +20,6 @@ server.register(socketIo, {
 	},
 });
 
-function getBody(endpoint: Endpoint): object | string | undefined {
-	const {body_json: bodyJson, body_plain: bodyPlain} = endpoint;
-	if (bodyJson) {
-		return JSON.parse(bodyJson as string);
-	}
-
-	if (bodyPlain) {
-		return bodyPlain;
-	}
-}
-
-interface Headers {
-    [key: string]: string
-}
-
-interface RequestLog {
-    method: string
-    status: number
-    date: string
-    device: string
-    matching: boolean
-}
-
-interface EmitOptions extends Omit<RequestLog, 'date'> {
-    roomId: string,
-    device: string
-}
-
 function emitRequest({method, status, roomId, device, matching}: EmitOptions) {
 	const payload: RequestLog = {
 		method,
@@ -56,16 +28,7 @@ function emitRequest({method, status, roomId, device, matching}: EmitOptions) {
 		device,
 		matching,
 	};
-
 	server.io.to(roomId).emit('got_request', payload);
-}
-
-function getDevice(userAgent?: string): string {
-	const {
-		os,
-		device,
-	} = uaParser(userAgent);
-	return `${os?.name ?? 'Unknown'}, ${device?.type ?? 'Unknown'}`;
 }
 
 function setHeaders(reply: FastifyReply, headers: Headers) {
@@ -111,7 +74,6 @@ server.all('/:hash', async (request, reply) => {
 	}
 
 	const body = getBody(endpoint);
-	console.log(body);
 	setHeaders(reply, endpoint.headers as Headers);
 	reply.header('Content-Type', endpoint.content_type);
 	emitRequest({

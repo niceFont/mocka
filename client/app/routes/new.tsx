@@ -137,14 +137,14 @@ function Submit() {
 	);
 }
 
-let counter = 0;
-const idPrefix = 'header';
 export default function Index() {
 	const [headerList, setHeaders] = useState<Array<string>>([]);
+	const [counter, setCounter] = useState(0);
+	const idPrefix = 'header';
 
 	const handleAddHeader = (e: MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
-		counter += 1;
+		setCounter(counter + 1);
 		setHeaders((prev: Array<string>) => ([...prev, `${idPrefix}-${counter}`]));
 	};
 
