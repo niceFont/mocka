@@ -63,7 +63,10 @@ export default function build(options?: FastifyServerOptions): FastifyInstance {
 		}
 
 		const body = getBody(endpoint);
-		setHeaders(reply, endpoint.headers as Headers);
+		if (endpoint.headers && Object.keys(endpoint.headers).length > 0) {
+			reply.headers(endpoint.headers as Headers);
+		}
+
 		reply.header('Content-Type', endpoint.content_type);
 		emitRequest({
 			method: request.method,
@@ -73,7 +76,7 @@ export default function build(options?: FastifyServerOptions): FastifyInstance {
 			matching: matches,
 		});
 		reply.statusCode = endpoint.status;
-		return reply.send(body);
+		reply.send(body);
 	});
 
 	server.ready(err => {

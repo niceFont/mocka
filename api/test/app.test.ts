@@ -1,21 +1,11 @@
 import build from '../src/app';
 import {test, before, teardown} from 'tap';
-import {GenericContainer, StartedTestContainer} from 'testcontainers';
+import {StartedTestContainer} from 'testcontainers';
 import setup from './fixtures';
 
 let container: StartedTestContainer;
 before(async () => {
-	container = await new GenericContainer('postgres')
-		.withName('test_postgres')
-		.withExposedPorts({
-			host: 9876,
-			container: 5432,
-		})
-		.withEnv('POSTGRES_USER', 'postgres')
-		.withEnv('POSTGRES_PASSWORD', 'postgres')
-		.withEnv('POSTGRES_DB', 'postgres')
-		.start();
-	await setup();
+	container = (await setup()).container;
 });
 
 test('valid GET plaintext request', async t => {
@@ -28,6 +18,21 @@ test('valid GET plaintext request', async t => {
 	t.equal(response.statusCode, 200, 'returns status 200');
 	t.has(response.headers, {
 		testheader: 'wow this works',
+	});
+});
+test('valid GET json request', async t => {
+	const app = build();
+	const expectedBody = {
+		value: 'test',
+	};
+	const response = await app.inject({
+		method: 'GET',
+		url: '/efg',
+	});
+	t.match(response.json<typeof expectedBody>(), expectedBody, 'returns a valid json object');
+	t.equal(response.statusCode, 200, 'returns status 200');
+	t.has(response.headers, {
+		testheader: 'another header',
 	});
 });
 

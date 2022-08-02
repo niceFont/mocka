@@ -3,10 +3,10 @@ import {UAParser as uaParser} from 'ua-parser-js';
 import {FastifyReply} from 'fastify';
 import {Headers} from './types';
 
-export function getBody(endpoint: Endpoint): object | string | undefined {
+export function getBody(endpoint: Endpoint): string | undefined {
 	const {body_json: bodyJson, body_plain: bodyPlain} = endpoint;
 	if (bodyJson) {
-		return JSON.parse(bodyJson as string);
+		return bodyJson as string;
 	}
 
 	if (bodyPlain) {
@@ -22,10 +22,3 @@ export function getDevice(userAgent?: string): string {
 	return `${os?.name ?? 'Unknown'}, ${device?.type ?? 'Unknown'}`;
 }
 
-export function setHeaders(reply: FastifyReply, headers: Headers) {
-	if (!headers || Object.keys(headers).length === 0) {
-		return;
-	}
-
-	reply.headers(headers);
-}
